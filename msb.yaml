@@ -2,7 +2,7 @@ proxy-groups:
   - name: "Auto"  
     type: select  
     proxies:  
-      - DIRECT  
+      - { name: "DIRECT", type: direct }
 
 rules:  
   - SCRIPT,https:\/\/gateway\.mashibing\.com\/edu-course\/(coursePackage\/app\/1|app\/systemCourse|courseWeb),mashibing.js,Auto  
