@@ -1,28 +1,17 @@
-proxy-groups:  
-  - name: "Auto"  
-    type: select  
-    proxies:  
-      - { name: "DIRECT", type: direct }
+# 在您的规则列表中添加脚本规则
+rules:
+  - SCRIPT, ^https:\/\/gateway\.mashibing\.com\/edu-course\/(coursePackage\/app\/1|app\/systemCourse|courseWeb), msb.js, requires-body=true
 
-rules:  
-  - SCRIPT,https:\/\/gateway\.mashibing\.com\/edu-course\/(coursePackage\/app\/1|app\/systemCourse|courseWeb),mashibing.js,Auto  
+# 配置 MITM（如果尚未配置）
+experimental:
+  # 确保启用忽略解析失败
+  ignore-resolve-fail: true
 
-script:  
-  matchers:  
-    - type: http-response  
-      request:  
-        url: "gateway\\.mashibing\\.com/edu-course/(coursePackage/app/1|app/systemCourse|courseWeb)"  
-      script: |  
-        const replaceAll = (str, find, replace) => str.split(find).join(replace);  
-        
-        let response = $response.body;  
+# 添加要跳过证书验证的主机名
+hosts:
+  'gateway.mashibing.com': 0.0.0.0
 
-        response = replaceAll(response, '"isTrial":false', '"isTrial":true');  
-        response = replaceAll(response, '"shareState":0', '"shareState":1');  
-        response = replaceAll(response, '"accredit":false', '"accredit":true');  
-        response = response.replace(/"plateId":\s*\d+/g, '"plateId":0');  
-
-        $done({ body: response });  
-
-proxies:  
-  - { name: "DIRECT", type: direct }
+# 如果需要，启用 TLS 证书跳过验证
+tls-cert:
+  allowInsecure: true
+  skip-cert-verify: true
